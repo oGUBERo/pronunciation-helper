@@ -6,7 +6,10 @@
   "permissions": ["activeTab"],
   "content_scripts": [
     {
-      "matches": ["*://*.wikipedia.org/*"],
+      "matches": [
+        "*://*.wikipedia.org/*",
+        "*://*.google.com/*"
+      ],
       "js": ["content.js"]
     }
   ],

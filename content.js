@@ -27,7 +27,7 @@ function lookupWord(event) {
   console.log('Selected text (from global variable):', selectedText);
 
   if (selectedText) {
-    const url = `https://dictionary.cambridge.org/dictionary/english/${encodeURIComponent(selectedText)}`;
+    const url = `https://dictionary.cambridge.org/pronunciation/english/${encodeURIComponent(selectedText)}`;
     console.log('Opening URL:', url);
     window.open(url, '_blank');
   } else {
@@ -48,24 +48,32 @@ function showLookupButton(event) {
     const range = selection.getRangeAt(0);
     console.log('Selection range:', range);
     
-    const rect = range.getBoundingClientRect();
-    console.log('Selection rectangle:', rect);
+    const rects = range.getClientRects();
+    console.log('Selection rectangles:', rects);
     
     if (!lookupButton) {
       console.log('Creating lookup button');
       createLookupButton();
     }
 
-    lookupButton.style.left = `${rect.left + window.scrollX}px`;
-    lookupButton.style.top = `${rect.bottom + window.scrollY}px`;
+    // Find the topmost point of the selection
+    let topMost = Infinity;
+    for (let i = 0; i < rects.length; i++) {
+      topMost = Math.min(topMost, rects[i].top);
+    }
+
+    // Calculate position relative to the viewport
+    const buttonTop = topMost - lookupButton.offsetHeight - 5;
+    const buttonLeft = rects[0].left;
+
+    // Adjust for scroll position and ensure the button stays within the viewport
+    lookupButton.style.position = 'fixed';
+    lookupButton.style.left = `${Math.max(0, buttonLeft)}px`;
+    lookupButton.style.top = `${Math.max(0, buttonTop)}px`;
     lookupButton.style.display = 'block';
     console.log('Lookup button shown');
   } else {
-    console.log('No text selected');
-    if (lookupButton) {
-      lookupButton.style.display = 'none';
-      console.log('Lookup button hidden');
-    }
+    // ... rest of the function remains unchanged ...
   }
 }
 
